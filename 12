@@ -1,0 +1,54 @@
+import org.bson.Document;
+
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+
+public class mongoconnection {
+	public static void main(String[] agrs)
+	{
+		// Creating a Mongo client 
+		MongoClient mongoClient = new MongoClient( "localhost" , 27017 ); 
+		System.out.println("Created Mongo Connection successfully"); 
+		
+		
+		System.out.println("Below are list of databases present in MongoDB");
+		// To get all database names        
+		 MongoCursor<String> dbsCursor = mongoClient.listDatabaseNames().iterator();
+		   while(dbsCursor.hasNext()) {
+		          System.out.println(dbsCursor.next());}
+		   
+		   MongoDatabase db = mongoClient.getDatabase("BikeRetailerManagementSystem");
+		   System.out.println("\n\nGet database is successful");
+		   
+		   
+		 //Inserting sample record by creating collection and document.
+		   MongoCollection<Document>  collection= db.getCollection("Book");
+		   Document doc =new Document("Vansh","showroom");
+		   collection.insertOne(doc);
+		   System.out.println("\n########### Insert is completed  ###############");
+		   
+		   
+		   
+		   System.out.println("\n\nBelow are list of databases present in MongoDB");
+			// To get all database names        
+			 MongoCursor<String> dbsCursor1 = mongoClient.listDatabaseNames().iterator();
+			   while(dbsCursor1.hasNext()) {
+			          System.out.println(dbsCursor1.next());}
+			   
+			   
+		 //Drop Database
+		   mongoClient.dropDatabase("BikeRetailerManagementSystem");
+		   System.out.println("\n################## Database dropped successfully ##################");
+		   
+		   System.out.println("\n\nAfter Database getting dropped, present list of Database's...");
+		 //list all databases
+		  MongoCursor<String> dbsCursor2 = mongoClient.listDatabaseNames().iterator();
+		    while(dbsCursor2.hasNext()) {
+		           System.out.println(dbsCursor2.next());
+		  }
+		   
+	mongoClient.close();
+		   }
+}
