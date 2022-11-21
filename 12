@@ -1,86 +1,112 @@
+import java.util.Iterator;
 import java.util.Scanner;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
 
-public class mongodbconn {
-	public static void main(String args[])
+public class mongo {
+	public static void main(String[] args)
 	{
-		Scanner sn=new Scanner(System.in);
-		
 		MongoClient mongo=new MongoClient("localhost",27017);
 		System.out.print("Connection Successful");
+		Scanner sn=new Scanner(System.in);
 		
+		System.out.print("\nList Of Databases PResent :");
 		MongoCursor<String> cur=mongo.listDatabaseNames().iterator();
 		while(cur.hasNext())
 		{
 			System.out.println(cur.next());
 		}
 		
-		
-		System.out.print("\nEnter Database Name You Want To Use Or Create:");
+		System.out.print("\n\nEnter Which Database you Want To use :");
 		String database=sn.next();
 		DB db=mongo.getDB(database);
 		
-		System.out.print("\nEnter Collection Name You Want To Use or Create :");
+		System.out.print("\n\nList of Collections :");
+		Iterator<String> curo=db.getCollectionNames().iterator();
+		while(curo.hasNext())
+		{
+			System.out.println();
+			System.out.println(curo.next());
+		}
+		
+		
+		System.out.print("\n\nEnter Collection name :");
 		String Collection=sn.next();
-		DBCollection table=db.createCollection(Collection, null);
+		DBCollection coll=db.createCollection(Collection, null);
 		
-		System.out.print("\nChoose What You Want To Do :");
+		System.out.print("\n\nWhich Operation You Want To Perform :");
 		System.out.print("\n1.Insert");
-		System.out.print("\n2.Delete");
-		System.out.print("\n3.Drop Database");
+		System.out.print("\n2.Update");
+		System.out.print("\n3.Delete");
+		System.out.print("\n4.Drop Database");
+		System.out.print("\n5.Display Data");
 		
-		System.out.print("\nChoose Any One :");
+		System.out.print("\nEnter Your Choice :");
 		int ch=sn.nextInt();
-		
-		BasicDBObject info=new BasicDBObject();
 		
 		if(ch==1)
 		{
-			
-			
-			System.out.print("Enter ID :");
-			int id=sn.nextInt();
-			info.put("Id", id);
+			BasicDBObject info=new BasicDBObject();
+			System.out.print("Enter roll no :");
+			int rollno=sn.nextInt();
+			info.put("rollno", rollno);
 			
 			System.out.print("Enter Name :");
-			String Name=sn.next();
-			info.put("Name", Name);
+			String name=sn.next();
+			info.put("name", name);
 			
-			System.out.print("Enter Age :");
-			int age=sn.nextInt();
-			info.put("Age",age);
+			coll.insert(info);
+			System.out.print("Data Inserted Successfully");
 			
-			System.out.print("Enter Class :");
-			String Div=sn.next();
-			info.put("Class",Div);
-			
-			table.insert(info);
-			
-			System.out.print("\nInserted Successfully");
 		}
 		else if(ch==2)
 		{
-			System.out.print("\nEnter Id :");
-			int id=sn.nextInt();
-			info.put("Id", id);
-			table.remove(info);
-			System.out.print("\nData Deleted Successfully");
+			System.out.print("Enter rollno to update :");
+			int rollno=sn.nextInt();
 			
+			BasicDBObject info=new BasicDBObject();
+			info.put("rollno", rollno);
+			
+			System.out.print("Enter Name :");
+			String name=sn.next();
+			BasicDBObject info2=new BasicDBObject();
+			info2.put("$set", new BasicDBObject("name",name));
+			
+			coll.update(info, info2);
+			
+			System.out.print("Data updated Successfully");
 		}
 		else if(ch==3)
 		{
+			System.out.print("Enter roll no to delete :");
+			int rollno=sn.nextInt();
+			
+			BasicDBObject info=new BasicDBObject();
+			info.put("rollno", rollno);
+			
+			coll.remove(info);
+			System.out.print("Data Deleted Successfully");
+		}
+		else if(ch==4)
+		{
 			db.dropDatabase();
-			System.out.print("\nDatabase Dropped Successfully");
+		}
+		else if(ch==5)
+		{
+			DBCursor cur1=coll.find();
+			while(cur1.hasNext())
+			{
+				System.out.println(cur1.next());
+			}
 		}
 		else
 		{
-			System.out.print("\nInvalid Choice");
+			System.out.print("Invalid Option");
 		}
-		
 	}
 }
